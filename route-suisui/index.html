@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c191d">
+<title>碎片编程 · 河岸实验站</title>
+<style>
+:root{color-scheme:dark;--bg:#0c191d;--ink:#f5f3e9;--muted:#a4b8b4;--panel:#14272b;--line:#335054;--mint:#bdf6bb;--dark:#122e25;--orange:#f4a77b}
+*{box-sizing:border-box}body{margin:0;background:#091216;color:var(--ink);font:16px/1.55 system-ui,-apple-system,sans-serif}
+button{font:inherit;cursor:pointer;color:inherit}button:focus-visible,canvas:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+button:disabled{cursor:default;opacity:.52}button:active:not(:disabled){scale:.98}
+[hidden]{display:none!important}.app{max-width:530px;margin:auto;min-height:100dvh;background:var(--bg)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:15px 20px;border-bottom:1px solid #20373a}
+.brand{font-size:16px;font-weight:850}.brand b{color:var(--mint);margin-right:6px}.tag,.eyebrow{color:var(--muted);font-size:11px;font-weight:750;letter-spacing:.12em}
+.tag{border:1px solid var(--line);border-radius:99px;padding:3px 8px}.screen{padding:20px 20px max(28px,env(safe-area-inset-bottom))}
+h1,h2,p{margin:0}h1{font-size:clamp(29px,8vw,42px);line-height:1.08;letter-spacing:-.045em}h2{font-size:22px;line-height:1.25}
+.hero{display:flex;justify-content:space-between;align-items:end;gap:8px}.hero h1{margin:6px 0 5px}.muted{color:var(--muted);font-size:13px}
+.pill{display:inline-grid;place-items:center;min-height:44px;padding:5px 13px;border:1px solid var(--line);border-radius:99px;background:var(--panel);font-size:13px;white-space:nowrap}
+.world{height:446px;position:relative;margin:14px -4px 0;overflow:hidden;border-radius:26px;border:1px solid var(--line);background:radial-gradient(ellipse at 78% 34%,#285047 0%,transparent 46%),radial-gradient(ellipse at 15% 80%,#153b43 0%,transparent 55%),#11292f}
+.world svg{position:absolute;width:100%;height:100%;inset:0;pointer-events:none}
+.pin{position:absolute;left:var(--x);top:var(--y);translate:-50% -50%;width:58px;height:52px;border-radius:17px;border:1px solid #58827a;background:#234540;box-shadow:0 5px 0 #0d2927;display:grid;place-items:center;color:#bdd5cb;font-weight:850}
+.pin small{position:absolute;top:58px;left:50%;translate:-50%;white-space:nowrap;font-size:11px;font-weight:650;color:#b6cdc5}
+.pin.current{width:74px;height:60px;background:var(--mint);color:var(--dark);border-color:#d4ffbf;box-shadow:0 6px 0 #5c9c69,0 0 0 8px #bdf6bb24}
+.pin.current small{top:65px;color:#e8fce1;font-size:13px}.pin.done{color:var(--mint);border-color:#82be95}
+.pin.locked{background:#193734;color:#b2c8bb;box-shadow:0 4px 0 #0d2927;opacity:.88}
+.world-label{position:absolute;color:#88aaa6;font-size:10px;letter-spacing:.11em;pointer-events:none}
+.map-hint{padding:10px 3px 0;color:var(--muted);font-size:12px;min-height:35px}
+.primary{border:0;border-radius:15px;background:var(--mint);color:var(--dark);font-weight:850;min-height:50px;padding:10px 15px;width:100%}
+.secondary{background:transparent;border:1px solid var(--line);border-radius:13px;font-weight:700;min-height:44px;padding:7px 13px}
+.head{display:flex;align-items:center;gap:12px;margin-bottom:20px}.head .secondary{flex:none}
+.question h1,.lab h1{font-size:30px;margin:6px 0 10px}.question pre{background:#091417;border:1px solid var(--line);border-radius:15px;padding:16px;overflow:auto;color:#e4f6bb;white-space:pre-wrap;overflow-wrap:anywhere}
+.options{display:grid;gap:8px;margin:14px 0}.option{min-height:49px;text-align:left;border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:8px 11px;display:flex;align-items:center;gap:10px}
+.option span:first-child{color:var(--muted);font:700 12px monospace}.option[aria-pressed=true]{border:2px solid var(--mint);padding:7px 10px;background:#244037}.option code{overflow-wrap:anywhere}
+.feedback{margin:12px 0;padding:11px 13px;background:var(--panel);border-radius:13px;border-left:3px solid var(--orange)}.feedback.ok{border-color:var(--mint)}
+.river{position:relative;overflow:hidden;margin-top:13px;height:238px;border:1px solid var(--line);border-radius:23px;background:radial-gradient(ellipse at 50% 12%,#395c56,#19353d 60%,#142b36)}
+.water{position:absolute;inset:49% 0 0;background:repeating-linear-gradient(175deg,#2b627466 0 2px,transparent 2px 17px),linear-gradient(#326471,#163e52);opacity:.88}
+.bank{position:absolute;bottom:0;width:25%;height:42%;background:linear-gradient(160deg,#517d62 4%,#253f34 7% 48%,#24373a);border-top:5px solid #90ab75;border-radius:35% 24% 0 0;box-shadow:0 6px 18px #10282b88}
+.bank.east{right:0;border-radius:24% 35% 0 0}.flag{position:absolute;right:7%;bottom:42%;font-size:26px}.river-label{position:absolute;bottom:7px;left:11px;font-size:11px;color:#e4f6e8}
+.character{position:absolute;z-index:1;width:124px;height:124px;left:22%;top:42%;transform:translate(-50%,-50%);will-change:left,top,scale}
+.character canvas{width:100%;height:100%;touch-action:none;cursor:grab}.character canvas:active{cursor:grabbing}
+#fallback{font-size:52px;text-align:center;line-height:124px}.character.cross{animation:cross .95s ease-in-out forwards}.character.sink{animation:sink .85s ease-in-out}.character.bounce{animation:bounce .85s ease-in-out}
+@keyframes cross{35%{left:40%;top:59%}65%{left:63%;top:55%}100%{left:82%;top:39%}}
+@keyframes sink{50%{left:48%;top:83%;opacity:.56}100%{left:22%;top:42%}}
+@keyframes bounce{35%{left:42%;top:18%;scale:1.12}65%{left:48%;top:65%;scale:.85 1.14}100%{left:22%;top:42%}}
+.materials{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}
+.material{min-height:50px;border:1px solid var(--line);border-radius:13px;background:var(--panel);font-size:14px;font-weight:750}
+.material[aria-pressed=true]{border-color:var(--mint);background:#284039}.swatch{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;background:var(--color)}
+.actions{display:grid;gap:8px}.result{font-size:13px;color:var(--muted);min-height:42px;padding:7px 1px}
+@media(max-width:355px){.screen{padding-inline:14px}.top{padding-inline:14px}.hero h1{font-size:28px}.pill{padding-inline:8px}.world{height:409px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand"><b>◈</b> 碎片编程</div><span class="tag">独立试玩</span></header>
+<main>
+<section id="map" class="screen">
+  <div class="hero"><div><p class="eyebrow">01 / 街角奶茶店</p><h1>第一块碎片</h1><p class="muted">让点单屏亮起来。</p></div><button class="pill" data-to="lab">碎碎实验台 ↗</button></div>
+  <div class="world" aria-label="学习路线">
+    <svg viewBox="0 0 360 446" preserveAspectRatio="none" aria-hidden="true">
+      <defs><pattern id="dots" width="15" height="15" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" fill="#6fa094" opacity=".24"/></pattern></defs>
+      <path fill="url(#dots)" d="M0 0h360v446H0z"/>
+      <path d="M-30 209C120 272 206 40 391 93M-23 360C99 365 236 171 394 197M-18 424C90 429 251 310 390 304" fill="none" stroke="#47726e" opacity=".32" stroke-width="1"/>
+      <path d="M94 62C94 92 185 84 187 120S272 146 266 182 223 216 212 245 101 256 101 312 168 355 180 375" fill="none" stroke="#8ea99a" opacity=".65" stroke-dasharray="3 7" stroke-linecap="round" stroke-width="3"/>
+      <circle cx="310" cy="316" r="30" fill="none" stroke="#74b098" opacity=".26"/><circle cx="310" cy="316" r="19" fill="none" stroke="#74b098" opacity=".22"/>
+    </svg>
+    <span class="world-label" style="top:14px;right:13px">路线 01</span>
+    <button id="current-pin" class="pin current" style="--x:26%;--y:14%" data-to="question" aria-label="开始第一关 让屏幕说话">▶<small>开始第一关</small></button>
+    <button class="pin locked" style="--x:52%;--y:27%" data-locked="记住顾客">02<small>记住顾客</small></button>
+    <button class="pin locked" style="--x:74%;--y:41%" data-locked="顾客改单">03<small>顾客改单</small></button>
+    <button class="pin locked" style="--x:59%;--y:55%" data-locked="算价格">04<small>算价格</small></button>
+    <button class="pin locked" style="--x:28%;--y:70%" data-locked="加一杯">05<small>加一杯</small></button>
+    <button class="pin locked" style="--x:50%;--y:84%" data-locked="结账小票">06<small>结账小票</small></button>
+  </div>
+  <p class="map-hint" id="map-hint" role="status">这次开放第一关的一道题。也可以先去玩碎碎。</p>
+</section>
+<section id="question" class="screen question" hidden>
+  <div class="head"><button class="secondary" data-to="map">‹ 地图</button><p class="eyebrow">第一关 / 试玩题</p></div>
+  <h1>让屏幕说话</h1><p>点单屏运行这段程序，屏幕上会显示什么？</p>
+  <pre><code>print("欢迎光临！")</code></pre>
+  <div class="options" role="group" aria-label="答案选项">
+    <button class="option" data-answer="0" aria-pressed="false"><span>A</span><code>"欢迎光临！"</code></button>
+    <button class="option" data-answer="1" aria-pressed="false"><span>B</span><code>欢迎光临！</code></button>
+    <button class="option" data-answer="2" aria-pressed="false"><span>C</span><code>print("欢迎光临！")</code></button>
+  </div>
+  <p id="feedback" class="feedback" role="status" hidden></p>
+  <div class="actions"><button id="check" class="primary" disabled>检查</button><button id="question-lab" class="secondary" data-to="lab" hidden>去玩碎碎 ↗</button></div>
+</section>
+<section id="lab" class="screen lab" hidden>
+  <div class="head"><button class="secondary" data-to="map">‹ 地图</button><p class="eyebrow">碎碎实验台 / 01</p></div>
+  <h1>帮碎碎过河</h1><p class="muted">点材料让碎碎碰一碰，再试试能不能到对岸。</p>
+  <div class="river" aria-label="河岸实验场">
+    <div class="water"></div><div class="bank"></div><div class="bank east"></div><span class="flag" aria-hidden="true">⚑</span><span class="river-label">拖动碎碎，可换角度看</span>
+    <div id="character" class="character"><canvas id="model" width="240" height="240" tabindex="0" aria-label="碎碎的三维模型，拖动或按方向键旋转"></canvas><div id="fallback" hidden aria-label="设备不支持三维显示">◈</div></div>
+  </div>
+  <div class="materials" role="group" aria-label="可接触的材料">
+    <button class="material" data-material="1" aria-pressed="false"><span class="swatch" style="--color:#8fdff3"></span>玻璃</button>
+    <button class="material" data-material="2" aria-pressed="false"><span class="swatch" style="--color:#c69ae7"></span>橡胶</button>
+    <button class="material" data-material="3" aria-pressed="false"><span class="swatch" style="--color:#d7a26a"></span>软木</button>
+  </div>
+  <div class="actions"><button class="primary" id="cross" disabled>试试过河</button><button class="secondary" data-to="question">直接去学</button></div>
+  <p id="result" class="result" role="status">碎碎还没碰到任何材料。</p>
+</section>
+</main>
+</div>
+<script>
+const get = id => document.getElementById(id);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+const materialNames = ['原形', '玻璃', '橡胶', '软木'];
+const reasons = ['引号告诉 Python 这是文字。屏幕只显示引号里面的内容。','','print、括号和引号写给 Python 看，屏幕只显示里面的文字。'];
+let selected = null, completed = false, material = 0, crossing = false;
+const key = 'suipian.preview.route-suisui.v1';
+try { completed = localStorage.getItem(key) === 'passed'; } catch {}
+function updatePin() {
+  get('current-pin').classList.toggle('done', completed);
+  get('current-pin').setAttribute('aria-label', completed ? '重玩第一关 让屏幕说话' : '开始第一关 让屏幕说话');
+  get('current-pin').firstChild.nodeValue = completed ? '✓' : '▶';
+  get('current-pin').lastChild.textContent = completed ? '重玩第一关' : '开始第一关';
+}
+function show(id) {
+  if (id === 'question') {
+    selected = null;
+    answers.forEach(option => option.setAttribute('aria-pressed','false'));
+    get('feedback').hidden = true;
+    get('check').disabled = true;
+    get('check').dataset.passed = 'false';
+    get('check').textContent = '检查';
+    get('question-lab').hidden = true;
+  }
+  for (const name of ['map','question','lab']) get(name).hidden = name !== id;
+  window.scrollTo(0,0);
+  if (id === 'lab') draw();
+}
+updatePin();
+document.querySelectorAll('[data-to]').forEach(button => button.addEventListener('click', () => show(button.dataset.to)));
+document.querySelectorAll('[data-locked]').forEach(button => button.addEventListener('click', () => {
+  get('map-hint').textContent = '「' + button.dataset.locked + '」是后续关卡。试玩请从第一关开始。';
+}));
+const answers = [...document.querySelectorAll('[data-answer]')];
+answers.forEach(button => button.addEventListener('click', () => {
+  selected = Number(button.dataset.answer);
+  answers.forEach(option => option.setAttribute('aria-pressed', String(option === button)));
+  get('feedback').hidden = true;
+  get('check').disabled = false;
+  get('check').textContent = '检查';
+  get('question-lab').hidden = true;
+}));
+get('check').addEventListener('click', () => {
+  if (get('check').dataset.passed === 'true' && selected === 1 && !get('feedback').hidden) { show('map'); return; }
+  const ok = selected === 1;
+  const feedback = get('feedback');
+  feedback.hidden = false;
+  feedback.classList.toggle('ok', ok);
+  feedback.textContent = ok ? '答对了！print 会把括号里的内容显示出来。' : reasons[selected];
+  get('check').dataset.passed = String(ok);
+  get('check').textContent = ok ? '返回地图' : '再选一个';
+  get('check').disabled = !ok;
+  get('question-lab').hidden = !ok;
+  if (ok) {
+    completed = true;
+    try { localStorage.setItem(key, 'passed'); } catch {}
+    updatePin();
+  }
+});
+const choices = [...document.querySelectorAll('[data-material]')];
+choices.forEach(button => button.addEventListener('click', () => {
+  if (crossing) return;
+  material = Number(button.dataset.material);
+  choices.forEach(choice => choice.setAttribute('aria-pressed', String(choice === button)));
+  get('character').className = 'character';
+  get('result').textContent = '碎碎碰了碰材料，变成了' + materialNames[material] + '。';
+  get('cross').disabled = false;
+  get('cross').textContent = '试试过河';
+  draw();
+}));
+get('cross').addEventListener('click', () => {
+  if (!material || crossing) return;
+  const action = ['', 'sink', 'bounce', 'cross'][material];
+  crossing = true;
+  get('cross').disabled = true;
+  choices.forEach(choice => choice.disabled = true);
+  get('character').className = 'character';
+  get('character').getBoundingClientRect();
+  get('character').classList.add(action);
+  get('result').textContent = '碎碎出发了…';
+  setTimeout(() => {
+    crossing = false;
+    choices.forEach(choice => choice.disabled = false);
+    get('result').textContent = ['', '玻璃碎碎沉下去了。试试能浮在水上的材料。', '橡胶碎碎弹起来了，还是落在了这边。换一种试试。', '成功了！软木碎碎浮在水面上，漂到了对岸。'][material];
+    get('cross').textContent = material === 3 ? '已到对岸' : '再试一次';
+    get('cross').disabled = material === 3;
+  }, reduced.matches ? 30 : 980);
+});
+const model = get('model');
+const gl = model.getContext('webgl', { alpha:true, antialias:false, premultipliedAlpha:false });
+let draw = () => {};
+let yaw = -.33, pitch = .18, pointer = null;
+if (gl) {
+  try {
+    const vertex = `
+      attribute vec2 vertex;
+      varying vec2 uv;
+      void main(){uv=vertex;gl_Position=vec4(vertex,0.,1.);}
+    `;
+    const fragment = `
+      precision highp float;
+      varying vec2 uv;
+      uniform vec2 turn;
+      uniform int kind;
+      vec3 local(vec3 p) {
+        float c=cos(turn.x),s=sin(turn.x);
+        p.xz=mat2(c,s,-s,c)*p.xz;
+        c=cos(turn.y);s=sin(turn.y);
+        p.yz=mat2(c,s,-s,c)*p.yz;
+        return p;
+      }
+      float box(vec3 p,vec3 b,float r) {
+        vec3 q=abs(p)-b;
+        return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.)-r;
+      }
+      float shape(vec3 p) {
+        p.x+=p.y*.13;
+        float body=box(p,vec3(.36,.41,.35),.18);
+        return max(body,dot(p,normalize(vec3(1.,1.,.45)))-.70);
+      }
+      float scene(vec3 p) {return shape(local(p));}
+      float grain(vec3 p) {return fract(sin(dot(p,vec3(12.9898,78.233,37.719)))*43758.5453);}
+      void main(){
+        vec3 ro=vec3(uv*1.01,2.5),rd=vec3(0.,0.,-1.);
+        float t=0.;
+        for(int i=0;i<48;i++){
+          float d=scene(ro+rd*t);
+          if(abs(d)<.0012 || t>4.0)break;
+          t+=max(d*.75,.0012);
+        }
+        if(t>4.){gl_FragColor=vec4(0.);return;}
+        vec3 wp=ro+rd*t,p=local(wp);
+        vec2 e=vec2(.002,0.);
+        vec3 n=normalize(vec3(scene(wp+e.xyy)-scene(wp-e.xyy),scene(wp+e.yxy)-scene(wp-e.yxy),scene(wp+e.yyx)-scene(wp-e.yyx)));
+        vec3 light=normalize(vec3(-.6,.85,1.3));
+        float diffuse=max(0.,dot(n,light));
+        float rim=pow(1.-max(0.,n.z),2.5);
+        vec3 base=vec3(.58,.89,.56);
+        float shine=.20, gloss=24.;
+        if(kind==1){base=vec3(.30,.79,.93);shine=.80;gloss=40.;}
+        if(kind==2){base=vec3(.78,.53,.89);shine=.16;gloss=12.;}
+        if(kind==3){
+          base=vec3(.80,.53,.30);
+          float grit=grain(floor(p*69.)),flecks=grain(floor(p*22.));
+          base*=.82+grit*.21+flecks*.13;
+          if(flecks<.23)base*=.69;
+          shine=.08;gloss=10.;
+        }
+        vec3 color=base*(.51+.58*diffuse)+rim*vec3(.17,.26,.23);
+        float spec=pow(max(0.,dot(n,normalize(light-rd))),gloss);
+        color+=spec*shine*vec3(1.,.98,.91);
+        if(kind==1){
+          float stripe=1.-smoothstep(.018,.055,abs(p.x+p.y*.45+.19));
+          color+=vec3(.27,.42,.49)*(stripe*.42+rim*.70);
+        }
+        float face=step(.34,p.z);
+        vec2 eye=vec2(abs(p.x)-.177,p.y-.078);
+        float eyeMask=(1.-smoothstep(.87,1.,length(eye/vec2(.065,.095))))*face;
+        color=mix(color,vec3(.043,.095,.084),eyeMask);
+        vec2 spark=eye-vec2(-.015,.027);
+        color=mix(color,vec3(.99,.98,.88),(1.-smoothstep(.012,.023,length(spark)))*eyeMask);
+        vec2 smile=vec2(p.x,p.y+.145);
+        float arc=abs(length(vec2(smile.x,smile.y-.04))-.081);
+        float mouth=(1.-smoothstep(.010,.021,arc))*step(smile.y,.019)*face;
+        color=mix(color,vec3(.05,.11,.092),mouth);
+        float cheek=(1.-smoothstep(.7,1.,length(vec2(abs(p.x)-.29,p.y+.083)/vec2(.067,.034))))*face;
+        color=mix(color,vec3(.98,.57,.43),cheek*.52);
+        gl_FragColor=vec4(color,kind==1 ? .78+.22*max(eyeMask,rim) : 1.);
+      }
+    `;
+    function shader(type, source) {
+      const out = gl.createShader(type);
+      gl.shaderSource(out,source);
+      gl.compileShader(out);
+      if (!gl.getShaderParameter(out,gl.COMPILE_STATUS)) throw Error(gl.getShaderInfoLog(out));
+      return out;
+    }
+    const program = gl.createProgram();
+    gl.attachShader(program,shader(gl.VERTEX_SHADER,vertex));
+    gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fragment));
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program,gl.LINK_STATUS)) throw Error(gl.getProgramInfoLog(program));
+    gl.useProgram(program);
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+    const input = gl.getAttribLocation(program,'vertex');
+    gl.enableVertexAttribArray(input);
+    gl.vertexAttribPointer(input,2,gl.FLOAT,false,0,0);
+    const turn = gl.getUniformLocation(program,'turn');
+    const kind = gl.getUniformLocation(program,'kind');
+    draw = () => {
+      gl.viewport(0,0,model.width,model.height);
+      gl.uniform2f(turn,yaw,pitch);
+      gl.uniform1i(kind,material);
+      gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    };
+    model.dataset.renderer = 'webgl';
+    draw();
+  } catch(error) {
+    console.warn('三维显示初始化失败',error.message);
+  }
+}
+if (!model.dataset.renderer) {
+  model.hidden = true;
+  get('fallback').hidden = false;
+  draw = () => {get('fallback').style.color = ['#bdf6bb','#8fdff3','#c69ae7','#d7a26a'][material];};
+}
+model.addEventListener('pointerdown',event => {
+  pointer = {id:event.pointerId,x:event.clientX,y:event.clientY};
+  model.setPointerCapture(event.pointerId);
+});
+model.addEventListener('pointermove',event => {
+  if (!pointer || pointer.id !== event.pointerId) return;
+  yaw += (event.clientX-pointer.x)*.026;
+  pitch = Math.max(-1.05,Math.min(1.05,pitch+(event.clientY-pointer.y)*.021));
+  pointer.x=event.clientX;
+  pointer.y=event.clientY;
+  draw();
+});
+for (const name of ['pointerup','pointercancel','lostpointercapture']) model.addEventListener(name,() => {pointer=null;});
+model.addEventListener('keydown',event => {
+  if (!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)) return;
+  event.preventDefault();
+  yaw += event.key==='ArrowRight' ? .2 : event.key==='ArrowLeft' ? -.2 : 0;
+  pitch = Math.max(-1.05,Math.min(1.05,pitch+(event.key==='ArrowDown' ? .17 : event.key==='ArrowUp' ? -.17 : 0)));
+  draw();
+});
+</script>
+</body>
+</html>
