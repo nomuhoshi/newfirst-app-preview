@@ -7,13 +7,13 @@
 //    也不缓存 sfx/ 下的测试音频。绝不用预先写好的输出冒充 Python 真实执行。
 // 3. 联网时优先取新版：先请求网络，成功就更新缓存；失败（离线、服务器错误）或网络超过 4 秒没响应，才读缓存。
 // 4. 缓存名带版本号。新版激活时删除所有旧的 suipian- 缓存，并立刻接管页面。
-const VERSION = "2026-11-04T20:19:50.342Z";
+const VERSION = "2026-11-04T21:08:26.460Z";
 const PREFIX = "rc1-suipian-";
 const CACHE = PREFIX + VERSION;
 const PRECACHE = [
   "./",
   "./index.html",
-  "./assets/main-GXQ0V4Fq.js",
+  "./assets/main-Deg6Oyw4.js",
   "./assets/errors-CoQSdPdD.js",
   "./assets/errors-DE9dolOj.css",
   "./assets/main-elCzXpc-.css",
