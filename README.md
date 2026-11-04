@@ -7,4 +7,4 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 来自 newfirst-app 的集成分支 sonnet/11-integrated（#11 + #41 修复 + 数据保护分支，提交 6f41e57）。本地存储键前缀 `pr11:`、离线缓存前缀 `pr11-suipian-`，不读写正式版进度。真人验收步骤见 newfirst-app 的 docs/18-真人验收清单.md。
 
 ## pr11-design/（同上 + 新视觉“墨蓝立体电路 v2.1”）
-来自 sonnet/11-integrated-design（提交 830ae9d（含地图路线连线））：在 pr11 的基础上叠加设计分支 sonnet/design-ink-3d。存储键前缀 `pr11design:`、缓存前缀 `pr11design-suipian-`，和 pr11/、正式版都互不读写。仅供试看，不是正式版。
+来自 sonnet/11-integrated-design（提交 4ab1769（含地图路线连线、首屏压缩））：在 pr11 的基础上叠加设计分支 sonnet/design-ink-3d。存储键前缀 `pr11design:`、缓存前缀 `pr11design-suipian-`，和 pr11/、正式版都互不读写。仅供试看，不是正式版。
