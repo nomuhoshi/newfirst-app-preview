@@ -8,6 +8,3 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 
 ## pr11-design/（同上 + 新视觉“墨蓝立体电路 v2.1”）
 来自 sonnet/11-integrated-design（提交 3349ed9（含地图路线连线、首屏压缩、进度文件导出））：在 pr11 的基础上叠加设计分支 sonnet/design-ink-3d。存储键前缀 `pr11design:`、缓存前缀 `pr11design-suipian-`，和 pr11/、正式版都互不读写。仅供试看，不是正式版。
-
-## route-suisui/（产品官给的「碎碎 + 第一题」独立试玩原型）
-产品官提供的单文件页面 `route-suisui/index.html`（原文放入，未改动）：路线地图 + 第一关一道题 + 「帮碎碎过河」碎碎实验台（WebGL 三维，不支持时降级为符号）。完全独立：不加载正式版代码，不读写正式版进度，只写一个本地键 `suipian.preview.route-suisui.v1`（记录第一题是否做对）。不是正式版，不含账号、付款。
