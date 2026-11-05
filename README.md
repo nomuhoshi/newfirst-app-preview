@@ -13,3 +13,7 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 ## access-check/（微信白屏 / 打不开 诊断页的独立预览，纯前端、只读）
 来自 newfirst-app 的 `sonnet/access-test-verify`（提交 2ee5339，基于 release/rc-1 9d1b4cb，完整 CI 通过：build、Chromium、WebKit；诊断页专项测试 27/27）。入口：`access-check/access-test.html`。让对方点“开始测试”，等它跑完，点“复制结果”发回来。**页面只读：不连云端、不创建账号、不写数据**（诊断配置为空；即使手动加 `?cloud=1` 也因为没配置而不连）。存储键前缀 `accesscheck:`、缓存前缀 `accesscheck-suipian-`。同一台手机上请分别在微信和 Safari 里各测一次，保留两份报告对比。rc1/、#42、正式站都没动。
 
+
+## fallback/（白屏兜底提示改版的独立预览，云端关闭）
+来自 newfirst-app 的 `sonnet/blank-screen-copy`（提交 0a88cc9，基于 release/rc-1 9d1b4cb；完整 CI 通过：build、Chromium、WebKit）。默认页面正常启动，用来对比的只有“主脚本已下载但脚本出错”时的兜底提示：已捕获脚本解析 / 启动异常且首屏没渲染出来 → 标题“页面脚本出错，应用未能启动”，错误详情放在下方可复制；确认是资源下载失败 → 仍是“页面没有正常加载”+ 网络建议。故障场景在本地用 `scripts/repro-blank-screen.mjs` 复现验收（线上这个目录不注入故障）。存储键前缀 `fallback:`、缓存前缀 `fallback-suipian-`。**云端关闭**（不连任何 Supabase），不是正式版，不并入 #42。rc1/、正式站都没动。
+

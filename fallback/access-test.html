@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>碎片编程 · 连接测试</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 16px/1.7 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; margin: 0 auto; padding: 20px 16px 48px; max-width: 560px; }
+  h1 { font-size: 20px; margin: 0 0 8px; }
+  p { margin: 0 0 12px; }
+  button { font: inherit; padding: 12px 20px; border-radius: 10px; border: 1px solid currentColor; background: transparent; color: inherit; }
+  button[disabled] { opacity: .5; }
+  #go { width: 100%; font-weight: 600; margin: 8px 0 16px; }
+  .row { padding: 8px 0; border-top: 1px solid rgba(128,128,128,.3); }
+  .ok { color: #1a7f37; } .bad { color: #cf222e; } .skip { opacity: .65; }
+  @media (prefers-color-scheme: dark) { .ok { color: #3fb950; } .bad { color: #ff7b72; } }
+  .verdict { border: 2px solid currentColor; border-radius: 10px; padding: 10px 12px; margin: 0 0 12px; white-space: pre-wrap; }
+  .small { font-size: 13px; opacity: .75; word-break: break-all; }
+  textarea { width: 100%; box-sizing: border-box; height: 220px; font: 13px/1.5 ui-monospace, Menlo, monospace; margin: 8px 0; }
+</style>
+</head>
+<body>
+<h1>碎片编程 · 连接测试</h1>
+<p>点下面的按钮，等它跑完（最多约 1–2 分钟，会真的试一次启动 Python）。这个页面是只读的：只下载网站文件，不连接云端，不创建账号，也不保存任何数据。然后点“复制结果”，把内容发给开发者。不需要运行任何命令。</p>
+<div id="verdict" class="verdict" hidden></div>
+<button id="go" type="button">开始测试</button>
+<div id="env" class="small"></div>
+<div id="out"></div>
+<div id="done" hidden>
+  <p><b>测试完成。</b></p>
+  <button id="copy" type="button">复制结果</button>
+  <textarea id="report" readonly></textarea>
+  <p class="small">如果“复制结果”没有反应，请长按上面的文字框，选择“全选”再“拷贝”。</p>
+</div>
+<script src="./access-test-config.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var cfg = window.ACCESS_TEST_CONFIG || {};
+  var lines = [];
+  function now() { return (window.performance && performance.now) ? performance.now() : new Date().getTime(); }
+  function say(cls, label, detail) {
+    var d = document.createElement("div"); d.className = "row " + cls;
+    d.textContent = (cls === "ok" ? "✅ " : cls === "bad" ? "❌ " : "⏭ ") + label + (detail ? "  " + detail : "");
+    $("out").appendChild(d);
+    lines.push((cls === "ok" ? "通过 " : cls === "bad" ? "失败 " : "跳过 ") + label + (detail ? "  " + detail : ""));
+  }
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve, reject) {
+      var t = setTimeout(function () { reject(new Error("超时（" + (ms / 1000) + " 秒没有响应）")); }, ms);
+      promise.then(function (v) { clearTimeout(t); resolve(v); }, function (e) { clearTimeout(t); reject(e); });
+    });
+  }
+  function errText(e) { return (e && (e.name ? e.name + ": " : "") + (e.message || e)) || "未知错误"; }
+  // fetch 在断网 / 被拦截 / 域名解析失败时都只会抛 TypeError（Failed to fetch / Load failed / NetworkError）：补一句人话
+  function netHint(e) {
+    var m = String((e && e.message) || e || "");
+    return (e && e.name === "TypeError") || /Failed to fetch|Load failed|NetworkError|network/i.test(m) ? "（请求没能发出去或被中断：可能没有网络、这个网址在当前网络下被拦截、或域名解析失败）" : "";
+  }
+  window.onerror = function (msg, src, line) { lines.push("页面脚本报错 " + msg + (line ? "（第 " + line + " 行）" : "")); };
+
+  // ---- 环境信息 ----
+  var ua = navigator.userAgent || "";
+  var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {};
+  var tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { tz = "未知"; }
+  var env = [
+    "时间：" + new Date().toString(),
+    "时区：" + tz + "；语言：" + (navigator.language || ""),
+    "在微信/QQ 里打开：" + (/MicroMessenger|QQ\//i.test(ua) ? "是" : "否"),
+    "网络类型：" + (conn.type || "未知") + " / " + (conn.effectiveType || "未知") + "；浏览器认为在线：" + navigator.onLine,
+    "网址：" + location.href,
+    "浏览器：" + ua
+  ];
+  $("env").textContent = env.join("\n");
+  $("env").style.whiteSpace = "pre-wrap";
+
+  function fetchTimed(url, opts, ms) {
+    var t0 = now();
+    return withTimeout(fetch(url, opts), ms).then(function (r) {
+      return r.arrayBuffer().then(function (b) { return { status: r.status, ok: r.ok, bytes: b.byteLength, ms: Math.round(now() - t0), res: r, buf: b }; });
+    });
+  }
+  function fmt(r) { return "HTTP " + r.status + "，" + r.bytes + " 字节，" + r.ms + " 毫秒"; }
+
+  var workerFile = null; // 从主程序（或它预加载的其他脚本块）里读出来的 Python 工作线程文件名
+  var chunks = [];       // 首页里预加载的其他脚本块（工作线程文件名可能写在它们里面）
+
+  // ---- 1. 网站文件 ----
+  function siteFiles() {
+    var base = location.href.replace(/[^\/]*$/, "");
+    var list = ["index.html", "manifest.webmanifest", "icon-192.png", "pyodide/pyodide-lock.json"];
+    var chain = Promise.resolve();
+    list.forEach(function (f) {
+      chain = chain.then(function () {
+        return fetchTimed(base + f + "?t=" + new Date().getTime(), { cache: "no-store" }, 20000).then(function (r) {
+          say(r.ok ? "ok" : "bad", "网站文件 " + f, fmt(r));
+          if (f === "index.html" && r.ok) {
+            var html = new TextDecoder("utf-8").decode(r.buf);
+            var m = html.match(/src="\.\/(assets\/[^"]+\.js)"/) || html.match(/src="(\.\/src\/[^"]+\.js)"/);
+            if (m) list.push(m[1]);
+            var re = /href="\.\/(assets\/[^"]+\.js)"/g, mm; while ((mm = re.exec(html))) chunks.push(mm[1]);
+          }
+        }, function (e) { say("bad", "网站文件 " + f, errText(e) + netHint(e)); });
+      });
+    });
+    // 主程序文件名要从首页里读出来，所以放在最后单独测
+    return chain.then(function () {
+      if (list.length > 4) {
+        var f = list[4];
+        return fetchTimed(base + f, { cache: "no-store" }, 30000).then(function (r) {
+          say(r.ok ? "ok" : "bad", "主程序 " + f, fmt(r));
+          if (!r.ok) return;
+          // 工作线程文件名写在主程序或它预加载的脚本块里（构建后是 assets/ 下的 py-worker-<哈希>.js）
+          var find = function (buf) { try { var m2 = new TextDecoder("utf-8").decode(buf).match(/py-worker-[A-Za-z0-9_-]+\.js/); if (m2) workerFile = "assets/" + m2[0]; } catch (e2) { /* 找不到就跳过 Python 测试 */ } };
+          find(r.buf);
+          var pending = Promise.resolve();
+          chunks.forEach(function (c) { if (c !== f) pending = pending.then(function () { if (workerFile) return; return fetchTimed(base + c, { cache: "no-store" }, 20000).then(function (x) { if (x.ok) find(x.buf); }, function () {}); }); });
+          return pending;
+        }, function (e) { say("bad", "主程序 " + f, errText(e) + netHint(e)); });
+      }
+      say("bad", "主程序文件", "没能从首页里找到主程序的文件名");
+    });
+  }
+
+
+  // ---- 1b. Python 工作线程：和应用一样真的启动一次（下载并启动 Pyodide，约 12MB） ----
+  function pythonWorker() {
+    var base = location.href.replace(/[^\/]*$/, "");
+    if (!workerFile) { say("skip", "Python 工作线程", "（没找到工作线程文件名：主程序没能下载，或这是开发版）"); return Promise.resolve(); }
+    var t0 = now();
+    return fetchTimed(base + workerFile, { cache: "no-store" }, 30000).then(function (r) {
+      say(r.ok ? "ok" : "bad", "Python 工作线程文件 " + workerFile, fmt(r));
+      if (!r.ok) throw new Error("工作线程文件没下载成功");
+    }).then(function () {
+      return new Promise(function (resolve) {
+        var w, done = false, tStart = now();
+        function finish(cls, detail) { if (done) return; done = true; clearTimeout(timer); try { w && w.terminate(); } catch (e) {} say(cls, "Python 启动（真实启动一次）", detail); resolve(); }
+        var timer = setTimeout(function () { finish("bad", "超过 90 秒还没启动好：网络太慢，或 Pyodide 文件（约 12MB）被拦截 / 被中断"); }, 90000);
+        try { w = new Worker(base + workerFile, { type: "module" }); }
+        catch (e) { finish("bad", "这个浏览器不能创建模块工作线程：" + errText(e) + "（微信 / QQ 内置浏览器偶尔会这样）；做题运行代码会失败，选择题仍可用"); return; }
+        w.onmessage = function (ev) {
+          var m = ev.data || {};
+          if (m.type === "ready") finish("ok", "Python 已就绪，" + Math.round(now() - tStart) + " 毫秒");
+          else if (m.type === "loadError") finish("bad", "Python 加载失败：" + String(m.msg || "").slice(0, 160) + "；下载 Pyodide 文件可能被拦截或中断");
+        };
+        w.onerror = function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); finish("bad", "Python 工作线程出错：" + ((ev && ev.message) || "工作线程没能启动（文件下载失败或被拦截）")); };
+        try { w.postMessage({ type: "init", indexURL: base + "pyodide/" }); } catch (e) { finish("bad", "给工作线程发消息失败：" + errText(e)); }
+      });
+    }).catch(function (e) { say("bad", "Python 工作线程", errText(e) + netHint(e)); });
+  }
+
+  // ---- 2~4. Supabase ----
+  function supa() {
+    var url = (cfg.supabaseUrl || "").replace(/\/+$/, ""), key = cfg.supabaseKey || "";
+    // 默认只读、纯前端：不连云端，不创建匿名账号，不写测试记录。只有开发者在网址后加 ?cloud=1 才会往下走。
+    if (!/[?&]cloud=1(&|$)/.test(location.search)) { say("skip", "云端检查（Supabase）", "（这个页面默认只读：不会连接云端，不会创建测试账号，也不会写入任何数据）"); return Promise.resolve(); }
+    if (!url || !key) { say("skip", "Supabase 未配置", "（项目主人还没填写，本次只测网站文件）"); return Promise.resolve(); }
+    var host = url.replace(/^https?:\/\//, "");
+    var token = null, uid = null;
+    var hdr = function (extra) { var h = { apikey: key, "Content-Type": "application/json" }; if (token) h.Authorization = "Bearer " + token; for (var k in extra) h[k] = extra[k]; return h; };
+    return fetchTimed(url + "/auth/v1/health", { headers: hdr({}) }, 20000).then(function (r) {
+      say(r.ok ? "ok" : "bad", "Supabase 连通（" + host + "）", fmt(r));
+      if (!r.ok) throw new Error("健康检查没通过");
+    }).then(function () {
+      return fetchTimed(url + "/auth/v1/signup", { method: "POST", headers: hdr({}), body: "{}" }, 25000).then(function (r) {
+        var j = {}; try { j = JSON.parse(new TextDecoder("utf-8").decode(r.buf)); } catch (e) {}
+        if (r.ok && j.access_token) { token = j.access_token; uid = j.user && j.user.id; say("ok", "测试账号登录（匿名）", fmt(r)); }
+        else { say("bad", "测试账号登录（匿名）", fmt(r) + "；" + (j.msg || j.message || j.error_description || "")); throw new Error("登录失败"); }
+      });
+    }).then(function () {
+      var note = "hello-" + new Date().getTime();
+      return fetchTimed(url + "/rest/v1/access_test?on_conflict=user_id", { method: "POST", headers: hdr({ Prefer: "resolution=merge-duplicates,return=minimal" }), body: JSON.stringify({ user_id: uid, note: note }) }, 25000).then(function (r) {
+        if (!r.ok) { say("bad", "写入自己的进度", fmt(r) + "；" + new TextDecoder("utf-8").decode(r.buf).slice(0, 120)); throw new Error("写入失败"); }
+        say("ok", "写入自己的进度", fmt(r));
+        return fetchTimed(url + "/rest/v1/access_test?select=note&user_id=eq." + uid, { headers: hdr({}) }, 25000).then(function (g) {
+          var rows = []; try { rows = JSON.parse(new TextDecoder("utf-8").decode(g.buf)); } catch (e) {}
+          var same = rows && rows[0] && rows[0].note === note;
+          say(g.ok && same ? "ok" : "bad", "读回自己的进度并核对一致", fmt(g) + (same ? "" : "；内容对不上"));
+        });
+      });
+    }).catch(function (e) { say("bad", "Supabase 测试中断", errText(e)); });
+  }
+
+  // 结论：用大白话先说结果；原因对应到“用户会看到什么”
+  function verdictText() {
+    var bad = lines.filter(function (l) { return l.indexOf("失败 ") === 0; }), ok = lines.filter(function (l) { return l.indexOf("通过 ") === 0; });
+    var out = [];
+    if (navigator.onLine === false) out.push("⚠ 浏览器说现在没有网络连接（离线）。请先连上 Wi‑Fi 或蜂窝网络再测。");
+    if (!ok.length && bad.length) out.push("所有检查都失败：多半是没有网络，或者这个网址在你当前的网络 / 浏览器里打不开。");
+    else {
+      if (bad.some(function (l) { return /主程序|index\.html/.test(l); })) out.push("主程序没能下载：打开应用会白屏。");
+      if (bad.some(function (l) { return /Python/.test(l); })) out.push("Python 没能启动：能看到地图和选择题，但做“运行代码”的题会失败。");
+      if (bad.some(function (l) { return /Supabase|测试账号|写入|读回/.test(l); })) out.push("云端（Supabase）连不上：登录和云端进度会不可用，本机学习不受影响。");
+    }
+    if (!bad.length) out.push(ok.length ? "已执行的检查通过（" + ok.length + " 项）。这还不等于应用一定能打开：文件下载成功只说明文件拿到了，主程序能不能解析、执行，这个页面没有验证。" : "没有执行任何检查。");
+    var skipped = lines.filter(function (l) { return l.indexOf("跳过 ") === 0; }).map(function (l) { return l.replace(/^跳过 /, "").replace(/\s{2,}.*$/, ""); });
+    if (skipped.length) out.push("跳过、没有检查的项目：" + skipped.join("、") + "。");
+    if (lines.some(function (l) { return l.indexOf("页面脚本报错") === 0; })) out.push("测试页自己的脚本也报过错（见下面“页面脚本报错”）。");
+    return out.join("\n");
+  }
+  function showReport(extra) {
+    var v = verdictText(); $("verdict").textContent = "结论：\n" + v; $("verdict").hidden = false;
+    $("go").disabled = false; $("go").textContent = "重新测试";
+    $("report").value = "【碎片编程 连接测试结果】\n结论：\n" + v + "\n\n" + env.join("\n") + "\n\n" + lines.join("\n") + (extra ? "\n" + extra : "");
+    $("done").hidden = false;
+  }
+  $("go").onclick = function () {
+    $("go").disabled = true; $("go").textContent = "测试中……"; $("out").innerHTML = ""; lines = []; $("done").hidden = true; $("verdict").hidden = true; $("copy").textContent = "复制结果";
+    if (navigator.onLine === false) say("bad", "浏览器当前离线", "（没有网络连接，后面的检查大概率都会失败）");
+    // 任何一步抛出没想到的错，也要把已有的结果交出来，不能停在“测试中……”
+    Promise.resolve().then(siteFiles).then(pythonWorker).then(supa).then(function () { showReport(""); }, function (e) { say("bad", "测试页自己出错了", errText(e)); showReport("测试被中断：" + errText(e)); });
+  };
+  $("copy").onclick = function () {
+    var ta = $("report"); ta.focus(); ta.select();
+    function manual() { $("copy").textContent = "没能自动复制：请长按上面的文字框，选“全选”再“拷贝”"; }
+    function legacy() { var ok = false; try { ok = document.execCommand("copy"); } catch (e) { ok = false; } if (ok) $("copy").textContent = "已复制 ✓"; else manual(); }
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(ta.value).then(function () { $("copy").textContent = "已复制 ✓"; }, legacy); } else legacy(); } catch (e) { legacy(); }
+  };
+})();
+</script>
+</body>
+</html>
