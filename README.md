@@ -8,3 +8,8 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 
 ## u6/（U6 前五关「类型与报错」的独立课程预览）
 来自 newfirst-app 的 `preview/u6-part1`（源码 = `content/u6-part3` 的 7f4028c，完整 CI 通过：build、Chromium、WebKit；只多预览工作流）：在 U1–U5 之后多出 U6「类型与报错」的前五关（它是什么类型、文字和数字互换、读懂报错、修正常见错误、用 print 找 bug），U7「字典」仍是“即将推出”。U6L6 项目「修好收银程序」已写好但**待开放**（它的代码题要等代码题运行器），不在地图上。含新题型“读报错选择题”。存储键前缀 `u6:`、缓存前缀 `u6-suipian-`。**云端关闭**（不连任何 Supabase，只能在本机学习），不是正式版，不并入 #42。
+
+
+## access-check/（微信白屏 / 打不开 诊断页的独立预览，纯前端、只读）
+来自 newfirst-app 的 `sonnet/access-test-verify`（提交 2ee5339，基于 release/rc-1 9d1b4cb，完整 CI 通过：build、Chromium、WebKit；诊断页专项测试 27/27）。入口：`access-check/access-test.html`。让对方点“开始测试”，等它跑完，点“复制结果”发回来。**页面只读：不连云端、不创建账号、不写数据**（诊断配置为空；即使手动加 `?cloud=1` 也因为没配置而不连）。存储键前缀 `accesscheck:`、缓存前缀 `accesscheck-suipian-`。同一台手机上请分别在微信和 Safari 里各测一次，保留两份报告对比。rc1/、#42、正式站都没动。
+
