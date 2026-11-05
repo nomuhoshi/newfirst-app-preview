@@ -14,6 +14,10 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 来自 newfirst-app 的 `preview/u7`（源码提交 68fbf31；完整 CI 在源码相同的 d96df6a 上通过：build、Chromium、WebKit；68fbf31 只多改了预览工作流的触发条件）= 课程分支 `preview/u6-part1`（U1–U6）+ U7 内容 + 空格修复（Draft PR #43：题面代码块保留缩进和空格）。U7「字典」5 关可玩（用键查值、更新已有的键、安全地查、新增与删除、遍历 `for name in stock`）；U7L6 库存小程序已写好但**待开放**（它的代码题要等代码题运行器），不在地图上。地图最后多一个“即将推出”的 U8 占位。存储键前缀 `u7:`、缓存前缀 `u7-suipian-`。**云端关闭**（不连任何 Supabase，只能在本机学习），不是正式版，不并入 #42。rc1/、u6/、正式站都没动。
 
 
+## u8/（U8「函数」前两关的独立课程预览）
+来自 newfirst-app 的 `preview/u8`（源码提交 faac4c7；完整 CI 在源码相同的 8702dce 上通过：build、Chromium、WebKit，两个内核都从地图进入 U8L1、U8L2，每道题先答错再答对；faac4c7 只多了预览工作流）= U7 预览 `preview/u7`（U1–U7，含空格修复，Draft PR #43）+ U8「函数」前两关：定义和调用（def 只定义不运行、名字() 才是调用）、给函数一个参数（传入不同的值，结果不同）。地图最后多一个“即将推出”的 U9「毕业小项目」占位。return、默认参数、作用域等后面几关还没写。存储键前缀 `u8:`、缓存前缀 `u8-suipian-`。**云端关闭**（不连任何 Supabase，只能在本机学习），不是正式版，不并入 #42。rc1/、u6/、u7/、正式站都没动。
+
+
 ## access-check/（微信白屏 / 打不开 诊断页的独立预览，纯前端、只读）
 来自 newfirst-app 的 `sonnet/access-test-verify`（提交 2ee5339，基于 release/rc-1 9d1b4cb，完整 CI 通过：build、Chromium、WebKit；诊断页专项测试 27/27）。入口：`access-check/access-test.html`。让对方点“开始测试”，等它跑完，点“复制结果”发回来。**页面只读：不连云端、不创建账号、不写数据**（诊断配置为空；即使手动加 `?cloud=1` 也因为没配置而不连）。存储键前缀 `accesscheck:`、缓存前缀 `accesscheck-suipian-`。同一台手机上请分别在微信和 Safari 里各测一次，保留两份报告对比。rc1/、#42、正式站都没动。
 
