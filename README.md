@@ -24,3 +24,7 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 ## fallback/（白屏兜底提示改版的独立预览，云端关闭）
 来自 newfirst-app 的 `sonnet/blank-screen-copy`（提交 0a88cc9，基于 release/rc-1 9d1b4cb；完整 CI 通过：build、Chromium、WebKit）。默认页面正常启动，用来对比的只有“主脚本已下载但脚本出错”时的兜底提示：已捕获脚本解析 / 启动异常且首屏没渲染出来 → 标题“页面脚本出错，应用未能启动”，错误详情放在下方可复制；确认是资源下载失败 → 仍是“页面没有正常加载”+ 网络建议。故障场景在本地用 `scripts/repro-blank-screen.mjs` 复现验收（线上这个目录不注入故障）。存储键前缀 `fallback:`、缓存前缀 `fallback-suipian-`。**云端关闭**（不连任何 Supabase），不是正式版，不并入 #42。rc1/、正式站都没动。
 
+
+
+## acc1/（登录／同步／保存的测试版验收预览，只连测试 Supabase）
+来自 newfirst-app 的 `sonnet3/test-acceptance-prep`（源码提交 d284d54a924f31d88d751a8b2aa4c8d1a5a7d4dc，基线 claude/auth-cleanup-read-failures aedba6b；完整 CI：run 42454587738，build、Chromium、WebKit 全部成功，deploy 按设计跳过）。构建时严格校验：云端只能是测试项目 `tqdwhtrextqlmctkryyg`（suipian-test），配置错误构建即失败。“我的”页显示源码提交、测试云项目、最近同步状态（只显示，没有任何清数据按钮）。存储键前缀 `acc1:`、缓存前缀 `acc1-suipian-`。**不连正式 Supabase**；真机验收步骤见 newfirst-app 的 `docs/38-real-device-acceptance-table.md`。rc1/、u6/、u7/、u8/、正式站都没动。
