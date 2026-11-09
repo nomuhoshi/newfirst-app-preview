@@ -28,3 +28,7 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 
 ## acc1/（登录／同步／保存的测试版验收预览，只连测试 Supabase）
 来自 newfirst-app 的 `sonnet3/test-acceptance-prep`（源码提交 d284d54a924f31d88d751a8b2aa4c8d1a5a7d4dc，基线 claude/auth-cleanup-read-failures aedba6b；完整 CI：run 42454587738，build、Chromium、WebKit 全部成功，deploy 按设计跳过）。构建时严格校验：云端只能是测试项目 `tqdwhtrextqlmctkryyg`（suipian-test），配置错误构建即失败。“我的”页显示源码提交、测试云项目、最近同步状态（只显示，没有任何清数据按钮）。存储键前缀 `acc1:`、缓存前缀 `acc1-suipian-`。**不连正式 Supabase**；真机验收步骤见 newfirst-app 的 `docs/38-real-device-acceptance-table.md`。rc1/、u6/、u7/、u8/、正式站都没动。
+
+
+## acc2/（登录／同步 AUTH-MAIL-02 验收预览，只连测试 Supabase）
+来自 newfirst-app 的 `preview/acc2`（源码提交 9b7bef90552fbadcdcd3f4595dfbf8726eb63b7a = `fix/auth-mail-02`，基线 fix/auth-mail-01 4e2848e）。登录／同步错误提示按 DESIGN-AUTH-02（S1a–S6、V1–V4、C1）对齐：中文说明 + 诊断行 + 真实冷却时间 + “你的 XP 还在这台设备上”；多设备冲突不再是死路；游客进度选择可“稍后再说”（不自动覆盖云端）；键盘遮挡处理。继承 acc1 的存储隔离、源码提交显示、测试云项目校验。存储键前缀 `acc2:`、缓存前缀 `acc2-suipian-`。**只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase**；Supabase 自带发信仍可能发不出邮件（SMTP 未配置，见 docs/38-smtp-resend-setup.md）。rc1/、acc1/、u6/、u7/、u8/、正式站都没动。
