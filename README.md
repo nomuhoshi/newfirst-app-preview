@@ -31,4 +31,4 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 
 
 ## acc2/（登录／同步 AUTH-MAIL-02 验收预览，只连测试 Supabase）
-来自 newfirst-app 的 `preview/acc2`（源码提交 4021ae3ece1eba805c8e0c7ec2da0acdd4f59713 = `fix/auth-mail-02`，基线 fix/auth-mail-01 4e2848e）。登录／同步错误提示按 DESIGN-AUTH-02（S1a–S6、V1–V4、C1）对齐：中文说明 + 诊断行 + 真实冷却时间 + “你的 XP 还在这台设备上”；多设备冲突不再是死路；游客进度选择可“稍后再说”（不自动覆盖云端）；键盘遮挡处理。继承 acc1 的存储隔离、源码提交显示、测试云项目校验。存储键前缀 `acc2:`、缓存前缀 `acc2-suipian-`。**只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase**；Supabase 自带发信仍可能发不出邮件（SMTP 未配置，见 docs/38-smtp-resend-setup.md）。rc1/、acc1/、u6/、u7/、u8/、正式站都没动。
+来自 newfirst-app 的 `preview/acc2`（源码提交 d716622093773e50bcd3079be9d70f20e63f5439 = `fix/auth-mail-02`，基线 fix/auth-mail-01 4e2848e）。已按产品官裁决调整：XP 措辞分情形、超时文案、冷却按邮箱记账。登录／同步错误提示按 DESIGN-AUTH-02（S1a–S6、V1–V4、C1）对齐：中文说明 + 诊断行 + 真实冷却时间 + “你的 XP 还在这台设备上”；多设备冲突不再是死路；游客进度选择可“稍后再说”（不自动覆盖云端）；键盘遮挡处理。继承 acc1 的存储隔离、源码提交显示、测试云项目校验。存储键前缀 `acc2:`、缓存前缀 `acc2-suipian-`。**只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase**；Supabase 自带发信仍可能发不出邮件（SMTP 未配置，见 docs/38-smtp-resend-setup.md）。rc1/、acc1/、u6/、u7/、u8/、正式站都没动。
