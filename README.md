@@ -32,3 +32,6 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 
 ## acc2/（登录／同步 AUTH-MAIL-02 验收预览，只连测试 Supabase）
 来自 newfirst-app 的 `preview/acc2`（源码提交 a8d26c1fdefd0c5c520e4b9c28740555e445bf72 = `fix/touch-targets`。在 e9d103a（矮屏「随机练习」入口 44 高）之上修了 3 个低优先级小问题：① 游客合并进账号的关卡带上完成日期；② 在开场介绍最后一屏登录、再退出后刷新，不再重放「你好，我是小码！」；③ 退出登录后「测试入口信息」的「最近确认同步」不再显示上一个账号的时间。更早的内容：在 `fix/auth-mail-02` d716622 之上修了手机验收的 3 个尺寸缺陷：地图「从这里开始 / 开始」、填空空格、「↺ 重新开始」高度 ≥ 44，矮屏 / 键盘弹起时介绍页标题不被底栏挡住）。已按产品官裁决调整：XP 措辞分情形、超时文案、冷却按邮箱记账。登录／同步错误提示按 DESIGN-AUTH-02（S1a–S6、V1–V4、C1）对齐：中文说明 + 诊断行 + 真实冷却时间 + “你的 XP 还在这台设备上”；多设备冲突不再是死路；游客进度选择可“稍后再说”（不自动覆盖云端）；键盘遮挡处理。继承 acc1 的存储隔离、源码提交显示、测试云项目校验。存储键前缀 `acc2:`、缓存前缀 `acc2-suipian-`。**只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase**；Supabase 自带发信仍可能发不出邮件（SMTP 未配置，见 docs/38-smtp-resend-setup.md）。rc1/、acc1/、u6/、u7/、u8/、正式站都没动。
+
+## v1rc/（第一版发布候选的独立预览，只连测试 Supabase）
+来自 newfirst-app 的 `preview/v1rc`（源码提交 ba1ec9834705724df422d409ce960bb04850ed6a = `release/v1-candidate`）。范围：U1–U5、写代码题判题、邮箱验证码登录、云端同步、触控尺寸 ≥ 44、代码题按需加载、PWA 图标、代码块保留缩进、内容安全策略（CSP）、隐私说明页（`v1rc/privacy.html`）。存储键前缀 `v1rc:`、缓存前缀 `v1rc-suipian-`。**只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase**；CSP 的 connect-src 也只放行这个测试项目。说明见 newfirst-app 的 `docs/40-release-v1-candidate.md`。rc1/、acc1/、acc2/、u6/、u7/、u8/、正式站都没动。
