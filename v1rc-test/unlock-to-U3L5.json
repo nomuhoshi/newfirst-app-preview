@@ -1,0 +1,31 @@
+{
+ "format": "suipian-progress",
+ "exportVersion": 1,
+ "exportedAt": "2026-11-11T00:00:00.000Z",
+ "build": "v1rc-test-unlock",
+ "state": {
+  "version": 3,
+  "xp": 0,
+  "streak": 0,
+  "lastDay": null,
+  "done": {
+   "U1L1": true,
+   "U1L2": true,
+   "U1L3": true,
+   "U1L4": true,
+   "U1L5": true,
+   "U1L6": true,
+   "U2L1": true,
+   "U2L2": true,
+   "U2L3": true,
+   "U2L4": true,
+   "U2L5": true,
+   "U3L1": true,
+   "U3L2": true,
+   "U3L3": true,
+   "U3L4": true
+  },
+  "lessonsCompleted": 0
+ },
+ "unreadable": []
+}
