@@ -49,4 +49,4 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 来自 newfirst-app 的 `preview/u67r`（源码提交 c0e8105 = `content/u6-u7-release` f759b35 + 预览工作流）= 正式版 main `f7c5f22`（U1–U5 + D5 + D6）+ U6「类型与报错」+ U7「字典」，第 8 单元显示即将推出；账号开关关闭。进度文件用 `u67c-test/unlock-U1-U5-to-U6L1.json`。自动化（本地 Chromium 对本产物，joint-u6-u7 390×844 / 390×450）：46 项全过。存储键前缀 `u67r:`、缓存前缀 `u67r-suipian-`。不连正式 Supabase；正式站没动。
 
 ## s4/（#64 存储 v4：进度安全预览，基于正式版 main 998a99d + fix/progress-safety，只连测试 Supabase）
-来自 newfirst-app 的 `preview/s4`（源码提交 a125e71 = `fix/progress-safety` 046499e + 预览工作流）。范围：正式版（U1–U5 + #63 反馈遮挡修复）+ 存储 v4（每页独立键、读时合并、一次性迁移、清除代数）。**候选，未发布**；用于 iPhone 真机核对：两个标签交替学习、通关后关闭重开、复制标签页、清除后旧标签不复活、旧版存档升级。地址：https://nomuhoshi.github.io/newfirst-app-preview/s4/ 。注意：和正式站同域名但存储隔离（键带 s4: 前缀），不会读到正式进度；也不要用它代替正式站学习。
+来自 newfirst-app 的 `preview/s4`（源码提交 0d760e7 = `fix/progress-safety` f13ec5e + 预览工作流；f13ec5e 完整 CI 全绿：build / chromium / webkit）。范围：正式版（U1–U5 + #63 反馈遮挡修复）+ 存储 v4（每页独立键、读时合并、一次性迁移、清除代数）。**候选，未发布**；用于 iPhone 真机核对：两个标签交替学习、通关后关闭重开、复制标签页、清除后旧标签不复活、旧版存档升级。地址：https://nomuhoshi.github.io/newfirst-app-preview/s4/ 。注意：和正式站同域名但存储隔离（键带 s4: 前缀），不会读到正式进度；也不要用它代替正式站学习。
