@@ -35,3 +35,6 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 
 ## v1rc/（第一版发布候选的独立预览，只连测试 Supabase）
 来自 newfirst-app 的 `preview/v1rc`（源码提交 ba1ec9834705724df422d409ce960bb04850ed6a = `release/v1-candidate`）。范围：U1–U5、写代码题判题、邮箱验证码登录、云端同步、触控尺寸 ≥ 44、代码题按需加载、PWA 图标、代码块保留缩进、内容安全策略（CSP）、隐私说明页（`v1rc/privacy.html`）。存储键前缀 `v1rc:`、缓存前缀 `v1rc-suipian-`。**只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase**；CSP 的 connect-src 也只放行这个测试项目。说明见 newfirst-app 的 `docs/40-release-v1-candidate.md`。rc1/、acc1/、acc2/、u6/、u7/、u8/、正式站都没动。
+
+## d5/（#60 选项排法修复的预览，基于正式版 main，只连测试 Supabase）
+来自 newfirst-app 的 `preview/d5`（源码提交 6fb1416 = `fix/choice-code-layout` ddbeae4 + 预览工作流）。范围就是正式版 U1–U5 + D5=A：含代码或多行输出的选项单列、保留换行和缩进、过长在选项内横滚；普通文字仍自然折行。**不含未发布课程**。存储键前缀 `d5:`、缓存前缀 `d5-suipian-`。只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase。rc1/、正式站都没动。
