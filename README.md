@@ -41,3 +41,6 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 
 ## u9c/（#61 U6–U9 + 样板关联合候选预览，只连测试 Supabase，不是正式版）
 来自 newfirst-app 的 `preview/u9c`（源码提交 9a23b39 = `integration/u8-sample-u9` b312f0a + 预览工作流）。叠加关系：正式版 main `cfb368a` ← #60 选项排法（D5=A）← #58 U6+U7 ← #59 U8 函数 6 关 + 样板关 D1L1 支线（U3 全 8 关完成才解锁）← #61 U9 小项目 6 关 24 题；另含 #62 反馈区内部滚动（待产品官定是否进正式版）。地图主线 58 关 + 支线 1 关。账号开关关闭。存储键前缀 `u9c:`、缓存前缀 `u9c-suipian-`。只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase。正式站都没动。
+
+## d6/（#62 反馈区内部滚动修复的预览，基于正式版 main fcac0a5，只连测试 Supabase）
+来自 newfirst-app 的 `preview/d6`（源码提交 0a16177 = `fix/feedbar-scroll` f7c5f22 + 预览工作流）。范围：正式版（U1–U5 + 选项排法 D5）+ D6：答错后反馈区过高时在反馈区内部滚动，「继续」贴底始终可点。**不含未发布课程**。存储键前缀 `d6:`、缓存前缀 `d6-suipian-`。只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase。正式站都没动。
