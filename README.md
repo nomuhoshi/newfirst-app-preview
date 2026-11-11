@@ -44,3 +44,6 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 
 ## d6/（#62 反馈区内部滚动修复的预览，基于正式版 main fcac0a5，只连测试 Supabase）
 来自 newfirst-app 的 `preview/d6`（源码提交 0a16177 = `fix/feedbar-scroll` f7c5f22 + 预览工作流）。范围：正式版（U1–U5 + 选项排法 D5）+ D6：答错后反馈区过高时在反馈区内部滚动，「继续」贴底始终可点。**不含未发布课程**。存储键前缀 `d6:`、缓存前缀 `d6-suipian-`。只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase。正式站都没动。
+
+## u67r/（#58 U6+U7 发布候选的预览，供 iPhone 真机放行；只连测试 Supabase）
+来自 newfirst-app 的 `preview/u67r`（源码提交 c0e8105 = `content/u6-u7-release` f759b35 + 预览工作流）= 正式版 main `f7c5f22`（U1–U5 + D5 + D6）+ U6「类型与报错」+ U7「字典」，第 8 单元显示即将推出；账号开关关闭。进度文件用 `u67c-test/unlock-U1-U5-to-U6L1.json`。自动化（本地 Chromium 对本产物，joint-u6-u7 390×844 / 390×450）：46 项全过。存储键前缀 `u67r:`、缓存前缀 `u67r-suipian-`。不连正式 Supabase；正式站没动。
