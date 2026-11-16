@@ -50,3 +50,6 @@ Test preview of 碎片编程 (NOT production). Built from nomuhoshi/newfirst-app
 
 ## s4/（#64 存储 v4：进度安全预览，基于正式版 main 998a99d + fix/progress-safety，只连测试 Supabase）
 来自 newfirst-app 的 `preview/s4`（源码提交 5ed32c0 = `fix/progress-safety` a822aa3（含首次迁移竞争修复 c989857）+ 预览工作流）。范围：正式版（U1–U5 + #63 反馈遮挡修复）+ 存储 v4（每页独立键、读时合并、一次性迁移、清除代数）。**候选，未发布**；用于 iPhone 真机核对：两个标签交替学习、通关后关闭重开、复制标签页、清除后旧标签不复活、旧版存档升级。地址：https://nomuhoshi.github.io/newfirst-app-preview/s4/ 。注意：和正式站同域名但存储隔离（键带 s4: 前缀），不会读到正式进度；也不要用它代替正式站学习。
+
+## captcha1/（D 人机验证闭环测试入口，只连测试 Supabase）
+来自 newfirst-app 的 `feat/captcha-closed-loop`（源码提交 44953092d39003e50017001ea0dd9b180c3286ef，PR #113；Test-cloud preview run 43808591220 success，产物分支 preview-dist-captcha1）。构建纳入 Cloudflare 官方 always-pass 测试站点密钥，CSP 放行 `https://challenges.cloudflare.com`。存储键前缀 `captcha1:`、缓存前缀 `captcha1-suipian-`。**只连测试项目 `tqdwhtrextqlmctkryyg`，不连正式 Supabase**。地址：https://nomuhoshi.github.io/newfirst-app-preview/captcha1/ 。acc1/、acc2/、正式站都没动。
